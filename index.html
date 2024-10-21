@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice with Add Item Form</title>
+    <link rel="stylesheet" href="styles2.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8My0mA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+
+<body>
+    <div class="invoice-box" id="content">
+        <div class="content">
+            <header>
+                <div class="company-details">
+                    <div class="c-logo">
+                        <img src="KAFE INVAsset 2.png"
+                            alt="Company Logo">
+                    </div>
+                    <p>Your Company Slogan</p>
+                    <p>Street Address</p>
+                    <p>City, ST ZIP Code</p>
+                    <p>Phone: Phone Fax: Fax</p>
+                </div>
+                <div class="invoice-details">
+                    <h2>INVOICE</h2>
+                    <p>Invoice # 100</p>
+                    <p>Date: <span id="currentDate"></span></p>
+                </div>
+            </header>
+
+            <section class="recipient-details">
+                <h3>TO:</h3>
+                <p id="recieptAddress"></p>
+            </section>
+
+            <table class="item-table">
+                <thead>
+                    <tr>
+                        <th class="txtAC" style="width: 25px ;">#</th>
+                        <th class="txtAL">DESCRIPTION</th>
+                        <th class="txtAL" style="width: 61px;">QUANTITY</th>
+                        <th class="txtAL" style="width: 85px;">UNIT PRICE</th>
+                        <th class="txtAR">TOTAL</th>
+                    </tr>
+                </thead>
+                <tbody id="items-table-body">
+            
+                </tbody>
+            </table>
+
+            <section class="totals">
+                <table>
+                    <tr>
+                        <th>Subtotal</th>
+                        <td id="subtotal">₹0</td>
+                    </tr>
+                    <tr>
+                        <th>Discount</th>
+                        <td >₹<span id="disc">0 </span></td>
+                    </tr>
+                    <tr class="total" style="font-weight: bold;">
+                        <th style="font-weight: bold;">Total</th>
+                        <td id="total">₹0</td>
+                    </tr>
+                </table>
+            </section>
+     
+        </div>
+        <div class="footer">
+            <div class="qr-code">
+                <button id="qrBtn" onclick="generateQR()">Generate <br> QR  Code</button>
+                <a id="payLink" href=""><div id="qrCode">
+                
+                </div></a>
+                
+
+                <span>Scan QR Code to <strong>Pay</strong></span>
+            </div>
+            <div class="payment-info">
+                <div class="logos">
+                    <img src="Google-Pay-logo (1).png" alt="">
+                    <img src="PhonePe-Logo.wine.png" alt="">
+                </div>
+                <div class="number">+91 9092 909 290</div>
+            </div>
+        </div>
+        <footer>
+            <p>Make all checks payable to Company Name</p>
+            <p>If you have any questions concerning this invoice, contact Name, Phone, Email</p>
+            <p>THANK YOU FOR YOUR BUSINESS!</p>
+        </footer>
+    </div>
+
+    <button class="add-item-button" onclick="openAddItemForm()">+</button>
+
+    <div class="add-item-form" id="add-item-form">
+        <label for="to-address">To</label>
+        <input type="text" id="to-address">
+
+        <h3>Add Item</h3>
+
+
+        <label for="description">Description:</label>
+        <input type="text" id="description">
+
+        <label for="quantity">Quantity:</label>
+        <input type="number" id="quantity" min="1">
+
+        <label for="unit-price">Unit Price:</label>
+        <input type="number" id="unit-price" step="0.01">
+
+
+        <button class="add-item" onclick="addItem()">Add Item</button>
+
+        <h3>Items</h3>
+        <div class="table-b">
+            <table class="item-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>DESCRIPTION</th>
+                        <th>QUANTITY</th>
+                        <th>UNIT PRICE</th>
+                        <th>TOTAL</th>
+                        <th>ACTIONS</th>
+                    </tr>
+                </thead>
+                <tbody id="form-items-table-body">
+                    <!-- Items in the form will be shown here -->
+                </tbody>
+            </table>
+        </div>
+        <label for="discount">Discount:</label>
+        <input type="number" id="discount">
+
+        <h3>Summary</h3>
+        <p>Subtotal: <span id="form-subtotal">0</span></p>
+        <p>Total: <span id="form-total">0</span></p>
+
+        <button class="ok-button" onclick="closeAddItemForm()">OK</button>
+        <button class="print-button" onclick="printInvoice()">Print</button>
+    </div>
+    <button onclick="saveAsPDF()">Save as PDF</button>
+    <script src="js2.js"></script>
+   
+    <script>
+        async function saveAsPDF() {
+          try {
+              const { jsPDF } = window.jspdf;
+              
+              const content = document.getElementById('content');
+      
+              // Create a new jsPDF instance
+              const pdf = new jsPDF('p', 'pt', 'letter');
+      
+              // Define the dimensions of a Letter page in points
+              const pageWidth = 8.5 * 72;
+              const pageHeight = 11 * 72;
+      
+              // Options for html2canvas
+              const options = {
+                  scale: 10, // Adjust this value as needed
+                  useCORS: true,
+                  logging: true,
+                  width: content.offsetWidth,
+                  height: content.offsetHeight
+              };
+      
+              // Use html2canvas to capture the HTML content as a canvas
+              const canvas = await html2canvas(content, options);
+      
+              // Convert the canvas to a PNG image data URL
+              const imgData = canvas.toDataURL('image/jpeg');
+      
+              // Add the image to the PDF (full page)
+              pdf.addImage(imgData, 'JPEG', 0, 0, pageWidth, pageHeight);
+      
+              // Compress the PDF using built-in compression options
+              pdf.output('dataurlnewwindow', { compression: 'MEDIUM' }); // Adjust compression level as needed
+      
+              // Save the PDF
+              pdf.save('invoice.pdf');
+          } catch (error) {
+              console.error('Error saving as PDF:', error);
+          }
+      }
+      const currentDate = new Date();
+      
+              // Format the date as desired (e.g., "MM/DD/YYYY")
+              const formattedDate = currentDate.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+      
+              // Update the HTML content with the current date
+              document.getElementById('currentDate').textContent = formattedDate;
+             
+             
+             
+             
+             
+              function generateQR() {
+                 
+      }
+          </script>
+
+</body>
+
+</html>
