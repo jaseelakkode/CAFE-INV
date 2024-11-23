@@ -107,7 +107,7 @@ function calculateTotal() {
     document.getElementById('qrCode').innerHTML = '';
     document.getElementById('qrBtn').style.display = 'none';
 
-    const qrInput = `upi://pay?pa=mjaseelakd@okicici&pn=Muhammed%20Jasil%20P&am=${total.toFixed(2)}&cu=INR&tn=bill`;
+    const qrInput = `upi://pay?pa=creativecircle452@okaxis&pn=Creative%20Kafe&am=${total.toFixed(2)}&cu=INR&tn=bill`;
     
     new QRCode(document.getElementById('qrCode'), {
         text: qrInput,
