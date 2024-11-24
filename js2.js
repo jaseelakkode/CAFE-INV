@@ -139,7 +139,8 @@ function calculateTotal(value) {
 
 // Convert the extracted string to a number (if needed)
 // var payV = parseFloat(numericPayTotal);
-const qrInput = `upi://pay?pa=mjaseelakd@okicici&pn=Muhammed%20Jasil%20P&am=${total.toFixed(2)}&cu=INR&tn=bill`;
+//const qrInput = `upi://pay?pa=mjaseelakd@okicici&pn=Muhammed%20Jasil%20P&am=${total.toFixed(2)}&cu=INR&tn=bill`;
+const qrInput = `upi://pay?pa=creativecircle452@okaxis&pn=Creative%20Kafe&am=${total.toFixed(2)}&cu=INR&tn=${receiptAddress}`;
     
 new QRCode(document.getElementById('qrCode'), {
     text: qrInput,
