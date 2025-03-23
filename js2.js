@@ -3,8 +3,14 @@ let editIndex = -1;
 
 const toAddressInput = document.getElementById("to-address");
 const receiptAddress = document.getElementById("recieptAddress");
-
+const invoiceNumber = document.getElementById("invNumber");
+const invInput = document.getElementById("invInput");
 // Add an event listener to update <p> content as the input changes
+invInput.addEventListener("input", function(){
+
+    invoiceNumber.textContent = "CK" + invInput.value;
+} )
+
 toAddressInput.addEventListener("input", function () {
     receiptAddress.textContent = toAddressInput.value;
 });
