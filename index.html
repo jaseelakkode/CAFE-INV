@@ -183,8 +183,17 @@
               // Compress the PDF using built-in compression options
               pdf.output('dataurlnewwindow', { compression: 'MEDIUM' }); // Adjust compression level as needed
       
-              // Save the PDF
-              pdf.save('invoice.pdf');
+              // // Save the PDF
+              // pdf.save('invoice.pdf');
+var receiptAddress = document.getElementById("recieptAddress").innerText.trim(); 
+var invNumber = document.getElementById("invNumber").innerText.trim(); 
+
+// Construct the filename
+var filename = `INVOICE_${receiptAddress}_${invNumber}.pdf`;
+
+// Save the PDF with the correct filename
+pdf.save(filename);
+
           } catch (error) {
               console.error('Error saving as PDF:', error);
           }
